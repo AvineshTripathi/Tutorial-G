@@ -1,25 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Dispatch, useEffect, useState, SetStateAction} from 'react';
 import './App.css';
+import Flow from "./Flow";
+import Splitter, {SplitDirection} from '@devbookhq/splitter';
+import Terminal from "./commands/Terminal";
+
+
+export interface Node {
+    id: string;
+    data: {color: string};
+    position: { x: number, y: number};
+    type: string;
+}
+
+export interface Edge {
+    id: string,
+    source: string,
+    target: string,
+}
+
+export interface Head {
+    x: number,
+    y: number,
+}
 
 function App() {
+    const [count, setCount] = useState(0)
+    const [nodes, setNodes] = useState<Node[]>([])
+    const [edges, setEdges] = useState<Edge[]>([])
+    const [head, setHead] = useState<Head>({x: 300, y: 100})
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <Splitter direction={SplitDirection.Horizontal}>
+              <div style={{height: '100vh'}}>
+                  <Flow nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} head={head} setHead={setHead} count={count} setCount={setCount}/>
+              </div>
+              <div >
+                  <div> TUTORIAL-G</div>
+                  <div>
+                      <Terminal nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} head={head} setHead={setHead} count={count} setCount={setCount}/>
+                  </div>
+                  <div>
+                      <button onClick={() =>  {
+
+                      } }>check</button>
+                  </div>
+              </div>
+
+          </Splitter>
+
+
   );
 }
 
