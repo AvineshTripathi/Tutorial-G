@@ -19,23 +19,9 @@ export interface NodeProps {
     head: Head,
     setHead: Dispatch<SetStateAction<Head>>
 }
-function GetNode(a: number) : Node {
 
-    let k = 300
-    let m = a*100
-    return {
-        id: a+'',
-        data: { color: 'blue'},
-        position: {x: k, y: m}, // handle positioning based on commands
-        type: 'colorNode'
-    }
-}
 const Flow = ({nodes, setNodes, edges, setEdges, head, setHead, count, setCount}: NodeProps) => {
-    const addNode = () => {
-        var temp = GetNode(count)
-        setCount(count+1)
-        setNodes([...nodes, temp])
-    }
+
     return (
             <div style={{ height: '100%' }} >
                 <ReactFlow nodes={nodes}  nodeTypes={nodeTypes} edges={edges}>

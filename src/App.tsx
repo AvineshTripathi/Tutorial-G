@@ -9,7 +9,10 @@ export interface Node {
     id: string;
     data: {color: string};
     position: { x: number, y: number};
+    style: {},
     type: string;
+    parentNode: string;
+    extent: "parent";
 }
 
 export interface Edge {
@@ -40,9 +43,7 @@ function App() {
                       <Terminal nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} head={head} setHead={setHead} count={count} setCount={setCount}/>
                   </div>
                   <div>
-                      <button onClick={() =>  {
-
-                      } }>check</button>
+                      <button onClick={() =>  {}}>check</button>
                   </div>
               </div>
 

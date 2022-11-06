@@ -11,7 +11,25 @@ function GetNode(a: number, head: Head) : Node {
         id: a+'',
         data: { color: 'red'},
         position: {x: k, y: m}, // handle positioning based on commands
-        type: 'colorNode'
+        style: {},
+        type: 'colorNode',
+        parentNode: '',
+        extent: "parent"
+    }
+}
+
+
+function GetBranchNode(name: string, nodeCount: number): Node {
+    let x = 30
+    let y = nodeCount*100
+    return {
+        id: `${name}-${nodeCount}`,
+        data: { color: 'red'},
+        position: {x: x, y: y},
+        style: {},
+        type: 'colorNode',
+        parentNode: `${name}`,
+        extent: "parent"
     }
 }
 
@@ -28,55 +46,103 @@ function GetEdge(a: number) {
 export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead, count, setCount}: NodeProps) {
 
     const [dir, setDir] = useState(false)
-    const [branches, setBranches] = useState<any>([])
+    const [branches, setBranches] = useState<any>(["master"])
+    const [branchNodeCount, setBranchNodeCount] = useState<number[]>([0])
+    const [activebranch, setActiveBranch] = useState({branch: 0})
 
-    let activebranch: number = -1
-    let arrlength: number = 0
-    const checkbranchexist = (test: any) : number => {
+    // to check if current active branch is equal to branch name provided by the user
+    const checkIfActionIsAllowed = (branchName: string) : number => {
+        if (branchName == branches[activebranch.branch]) {
+            return 1
+        }
+        return 0
+    }
+
+
+    const GetBranch = (name: string, count: number): Node => {
+        let x =1
+        if (branches.length%2==0) {
+            x = branches.length*100
+        }else {
+            x = -1*branches.length*100
+        }
+        let y = count*100
+
+        return {
+            id: `${name}`,
+            type: 'group',
+            data: {color: ''},
+            position: {x:x, y:y},
+            style: {
+                width: 100,
+                height: 500,
+            },
+            parentNode: '',
+            extent: 'parent'
+        }
+    }
+
+
+    const checkBranchExist = (test: any) : number => {
             let r:number = -1
-            branches.forEach( function (value: any, i:number) {
-                if (value[0] == test) {
-                    r=i
+            for(let index=0; index<branches.length; index++){
+                if (branches[index] == test){
+                    r=index
                 }
-                i=i+1
-            })
+            }
             return r
     }
-    const handleCheckout = () => {
-        let directionChangeX = 0
-
-         if (branches.length == 0) {
-             branches.push({"master" : [count]})
-             branches.push(["master", count-1, count])
-             activebranch = 1
-         }else {
-             let k:number = checkbranchexist("test")
-             console.log(k)
-             if (k!=-1) {
-
-                 activebranch =k
-             }else if (k == -1) {
-                 branches.push(["test", ""])
-             }
-         }
 
 
-        console.log(branches)
+    const handleCheckout = (branchName: string) => {
+
+        let index = checkBranchExist(branchName)
+        if (index!=-1) {
+            setActiveBranch({branch: index})
+        } else  {
+            setBranches([...branches, branchName])  // add new branch to array
+            setBranchNodeCount([...branchNodeCount, 0]) // initiate new branch node count
+            setNodes([...nodes, GetBranch(branchName, count)]) // add a branch interface(group)
+            setActiveBranch( {branch: branches.length}) // set new branch as active brnach
+        }
     }
-    const addNode = () => {
-        var temp = GetNode(count, head)
+
+
+    const addNode = (branchName: string) => {
+        let errorCheck = checkIfActionIsAllowed(branchName)
+        if (errorCheck == 0) {
+            // to create a logging function that logs on user terminal on UI
+            console.log("returning to parent call")
+            return
+        }
         setCount(count+1)
+        var temp
+        if (activebranch.branch != 0){
+            let data = [...branchNodeCount]
+            data[activebranch.branch] += 1
+            setBranchNodeCount(data)
+            temp = GetBranchNode(branchName,branchNodeCount[activebranch.branch])
+        } else {
+            let data = [...branchNodeCount]
+            data[0] += 1
+            setBranchNodeCount(data)
+
+            temp = GetNode(count, head)
+        }
+
         setNodes([...nodes, temp])
     }
 
-    const addEdge = () => {
+
+    const addEdge = (branchName: string) => {
+
       var temp = GetEdge(count)
       setEdges([...edges, temp])
         console.log(edges)
     }
 
-    const [message, setMessage] = useState('');
 
+    const [message, setMessage] = useState('');
     const [updated, setUpdated] = useState('');
 
     const handleChange = (event: any) => {
@@ -87,18 +153,20 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
         if (event.key === 'Enter') {
             //  Get input value
             setUpdated(message);
-            switch (event.target.value) {
+            let input = event.target.value.trim().split(' ')
+            let branchName = input.length > 2 ? input.pop() : ''
+            let compareCase = input.join(' ')
+            switch (compareCase) {
                 case "git add": {
-                 addNode();
+                 addNode(branchName);
                  break
                 }
                 case "git commit": {
-                    addEdge()
+                    addEdge(branchName)
                     break
                 }
                 case "git checkout": {
-                    setCount(count+1)
-                    handleCheckout()
+                    handleCheckout(branchName)
                     setDir(!dir)
                 }
             }
