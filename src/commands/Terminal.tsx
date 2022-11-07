@@ -8,7 +8,7 @@ function GetNode(a: number, head: Head) : Node {
     let k = head.x
     let m = a*head.y
     return {
-        id: a+'',
+        id: `master-${a}`,
         data: { color: 'red'},
         position: {x: k, y: m}, // handle positioning based on commands
         style: {},
@@ -59,14 +59,14 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
     }
 
 
-    const GetBranch = (name: string, count: number): Node => {
+    const GetBranch = (name: string): Node => {
         let x =1
         if (branches.length%2==0) {
             x = branches.length*100
         }else {
             x = -1*branches.length*100
         }
-        let y = count*100
+        let y = branchNodeCount[activebranch.branch]*100
 
         return {
             id: `${name}`,
@@ -102,13 +102,13 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
         } else  {
             setBranches([...branches, branchName])  // add new branch to array
             setBranchNodeCount([...branchNodeCount, 0]) // initiate new branch node count
-            setNodes([...nodes, GetBranch(branchName, count)]) // add a branch interface(group)
+            setNodes([...nodes, GetBranch(branchName)]) // add a branch interface(group)
             setActiveBranch( {branch: branches.length}) // set new branch as active brnach
         }
     }
 
 
-    const addNode = (branchName: string) => {
+    const addChange = (branchName: string) => {
         let errorCheck = checkIfActionIsAllowed(branchName)
         if (errorCheck == 0) {
             // to create a logging function that logs on user terminal on UI
@@ -127,20 +127,65 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
             data[0] += 1
             setBranchNodeCount(data)
 
-            temp = GetNode(count, head)
+            temp = GetNode(branchNodeCount[0], head)
         }
 
         setNodes([...nodes, temp])
     }
 
 
-    const addEdge = (branchName: string) => {
+    const addCommit = (branchName: string) => {
+        let errorCheck = checkIfActionIsAllowed(branchName)
+        if (errorCheck == 0) {
+            // to create a logging function that logs on user terminal on UI
+            console.log("returning to parent call")
+            return
+        }
 
-      var temp = GetEdge(count)
-      setEdges([...edges, temp])
+        const branchNodes = nodes.filter((obj) => obj.id.includes(branchName) && obj.data.color === "green")
+        console.log(branchNodes)
+        for(let index=branchNodes.length; index>1 ; index--) {
+           let str = `${branchNodes[index-1].id}-${branchNodes[index].id}`
+            console.log(str)
+            let check=0
+            edges.forEach(value => {
+                if (value.id === str){
+                    check = -1
+                }
+            })
+            console.log(check)
+            if (check == -1) {
+                break
+            } else {
+                let temp ={
+                    id: str,
+                    source: `${branchNodes[index-1].id}`,
+                    target: `${branchNodes[index].id}`
+                }
+                console.log(temp)
+
+            }
+
+        }
         console.log(edges)
     }
 
+    const addFile = (branchName: string) => {
+        let errorCheck = checkIfActionIsAllowed(branchName)
+        if (errorCheck == 0) {
+            // to create a logging function that logs on user terminal on UI
+            console.log("returning to parent call")
+            return
+        }
+        setNodes(nodes =>
+        nodes.map(obj => {
+            if(obj.id.includes(branchName)){
+                return {...obj, data : {color: "green"}}
+            }
+            return obj
+        })
+        )
+    }
 
     const [message, setMessage] = useState('');
     const [updated, setUpdated] = useState('');
@@ -154,15 +199,19 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
             //  Get input value
             setUpdated(message);
             let input = event.target.value.trim().split(' ')
-            let branchName = input.length > 2 ? input.pop() : ''
+            let branchName = input.length >= 2 ? input.pop() : ''
             let compareCase = input.join(' ')
             switch (compareCase) {
+                case "touch": {
+                    addChange(branchName);
+                    break
+                }
                 case "git add": {
-                 addNode(branchName);
+                    addFile(branchName)
                  break
                 }
                 case "git commit": {
-                    addEdge(branchName)
+                    addCommit(branchName)
                     break
                 }
                 case "git checkout": {
