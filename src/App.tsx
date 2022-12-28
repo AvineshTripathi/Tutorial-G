@@ -38,12 +38,12 @@ function App() {
                   <Flow nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} head={head} setHead={setHead} count={count} setCount={setCount}/>
               </div>
               <div >
-                  <div> TUTORIAL-G</div>
+                  <div className='head'> TUTORIAL-G</div>
                   <div>
                       <Terminal nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} head={head} setHead={setHead} count={count} setCount={setCount}/>
                   </div>
                   <div>
-                      <button onClick={() =>  {}}>check</button>
+
                   </div>
               </div>
 

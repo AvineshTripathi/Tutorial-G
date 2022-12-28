@@ -1,40 +1,39 @@
-.TerminalWrapper {
-    max-width: 1000px;
-    font-family: Monaco, Consolas, "Lucida Console", monospace;
-    display: block;
-    margin: auto;
-    border-radius: 5px;
-    box-shadow: rgb(0 0 0 / 30%) 5px 5px 30px;
-    clear: both;
+.terminal {
+    background-color: black;
+    height: 400px;
+}
+
+.terminal_container {
+    display: flex;
+    flex-direction: row;
+}
+
+.terminal_dollar {
+    padding: 2%;
+}
+.terminal_input {
+    width: 100%;
+    border: 0 0 0 2px;
+    background-color: black;
+    color: white;
+}
+
+
+.scroller {
+    height: 300px;
+    width: 100%;
     overflow: auto;
-    -webkit-transition: all 0.5s ease-out;
-    -moz-transition: all 0.5s ease-out;
-    -ms-transition: all 0.5s ease-out;
-    -o-transition: all 0.5s ease-out;
-    transition: all 0.5s ease-out;
 }
-.TerminalTitle {
-    padding: 5px 0;
-    font-size: 0.75em;
-    text-align: center;
-    background-color: #eeeeee;
-    border-bottom: #e0e0e0 1px solid;
-}
-.TerminalBody {
-    padding: 5px 10px;
-    height: 350px;
-    overflow-y: auto;
-    word-break: normal;
-    background-color: #3a3a3a;
-    color: #fff;
-}
-.TerminalLine {
-    padding-bottom: 0.5rem;
-    font-family: Monaco, Consolas, "Lucida Console", monospace;
-}
-.TerminalPrompt {
-    color: #ff00df;
-}
-.TerminalResults {
-    white-space: pre;
+
+.item {
+    display: flex;
+    flex-direction: row;
+    color: white;
+  }
+
+
+.ele {
+    align-items: center;
+    justify-content: center;
+    margin-top: 2%;
 }

@@ -1,7 +1,8 @@
 import React, {Dispatch, SetStateAction, useState} from "react";
 import {NodeProps} from "../Flow";
 import {Head, Node} from "../App";
-
+import './Terminal.css'
+import {BsCurrencyDollar} from 'react-icons/bs'
 
 function GetNode(a: number, head: Head) : Node {
 
@@ -33,15 +34,7 @@ function GetBranchNode(name: string, nodeCount: number): Node {
     }
 }
 
-function GetEdge(a: number) {
-    let k = a-2
-    let m = a-1
-    return {
-        id: `${k}-${m}`,
-        source: `${k}`,
-        target: `${m}`,
-    }
-}
+
 
 export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead, count, setCount}: NodeProps) {
 
@@ -58,6 +51,24 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
         return 0
     }
 
+    const GetEdge = (name: string, a: number) => {
+        var k = a-1
+        var arr = []
+        var temp
+        for (var i=0; i<a-1; i++) {
+            
+            temp = {
+                id: `${name}-${i}-${name}`,
+                source: `${name}-${i}`,
+                target: `${name}-${i+1}`,
+            }
+            console.log(temp)
+            arr.push(temp)
+        }
+        setEdges(edges.concat(arr))
+        console.log(edges)
+        console.log(nodes)
+    }
 
     const GetBranch = (name: string): Node => {
         let x =1
@@ -142,32 +153,7 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
             return
         }
 
-        const branchNodes = nodes.filter((obj) => obj.id.includes(branchName) && obj.data.color === "green")
-        console.log(branchNodes)
-        for(let index=branchNodes.length; index>1 ; index--) {
-           let str = `${branchNodes[index-1].id}-${branchNodes[index].id}`
-            console.log(str)
-            let check=0
-            edges.forEach(value => {
-                if (value.id === str){
-                    check = -1
-                }
-            })
-            console.log(check)
-            if (check == -1) {
-                break
-            } else {
-                let temp ={
-                    id: str,
-                    source: `${branchNodes[index-1].id}`,
-                    target: `${branchNodes[index].id}`
-                }
-                console.log(temp)
-
-            }
-
-        }
-        console.log(edges)
+        GetEdge(branchName, branchNodeCount[activebranch.branch])
     }
 
     const addFile = (branchName: string) => {
@@ -189,6 +175,7 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
 
     const [message, setMessage] = useState('');
     const [updated, setUpdated] = useState('');
+    const [command, addCommand] = useState<any>([])
 
     const handleChange = (event: any) => {
         setMessage(event.target.value);
@@ -198,6 +185,7 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
         if (event.key === 'Enter') {
             //  Get input value
             setUpdated(message);
+            addCommand([...command, message])
             let input = event.target.value.trim().split(' ')
             let branchName = input.length >= 2 ? input.pop() : ''
             let compareCase = input.join(' ')
@@ -208,7 +196,7 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
                 }
                 case "git add": {
                     addFile(branchName)
-                 break
+                    break
                 }
                 case "git commit": {
                     addCommit(branchName)
@@ -222,21 +210,34 @@ export default function Terminal({nodes, setNodes,edges, setEdges, head, setHead
             console.log(event.target.value)
         }
     };
-
+    
     return (
-        <div>
-            <input
-                type="text"
-                id="message"
-                name="message"
-                value={message}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-            />
-
+        <div className="terminal">
+            <div className="terminal_container">
+                <div className="terminal_dollar"><BsCurrencyDollar color="white" /></div>
+                <input
+                    className="terminal_input"
+                    type="text"
+                    id="message"
+                    name="message"
+                    value={message}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                />
+            </div>
+            
+            <div className="scroller">
+                {[...command].reverse().map((ele: any) => {
+                    return (
+                        <div className="item"><div className="terminal_dollar"><BsCurrencyDollar color="white"/></div><div className="ele">{ele}</div></div>
+                    )
+                })}
+            </div>
             <h2>Message: {message}</h2>
 
             <h2>Updated: {updated}</h2>
+            <h3>Current Branch: {branches[activebranch.branch]}</h3>
+            <h3>Current Branch Node Count: {branchNodeCount[activebranch.branch]}</h3>
         </div>
     )
 }

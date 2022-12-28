@@ -1,7 +1,6 @@
 import ReactFlow, {Controls, Background} from 'reactflow';
 import 'reactflow/dist/style.css';
 import ColorNode from "./components/ColorNode";
-import Edges from "./components/Edges";
 import React, {Dispatch, SetStateAction, useState} from "react";
 import NodeProps, {Node, Edge, Head} from './App'
 

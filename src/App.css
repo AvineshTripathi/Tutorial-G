@@ -39,3 +39,12 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+.head {
+  text-align: center;
+  font-size: larger;
+  font-weight: bolder;
+  margin-bottom: 2%;
+}
