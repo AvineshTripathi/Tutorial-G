@@ -1,3 +1,4 @@
+wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 # pull official base image
 FROM node:14-alpine
 
@@ -21,3 +22,4 @@ EXPOSE 3000
 
 # start app
 CMD ["npm", "start"]
+wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
